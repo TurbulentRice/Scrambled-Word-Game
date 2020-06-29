@@ -14,7 +14,7 @@ Features:
   - "Dictionary" class deserializes JSON file to Python dict 'vocabulary', moves undesired words to dict 'trash'. Performs actions over WED for return to Scrambled.
   - WED JSON file (~25mb)
   
-All that is needed to play Scrambled is to instantiate a default Scrambled objcet:
+All that is needed to play Scrambled is to instantiate a default Scrambled object:
 
 my_game = Scrambled()
 

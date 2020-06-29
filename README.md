@@ -15,6 +15,9 @@ Features:
   - WED JSON file (~25mb)
   
 All that is needed to play Scrambled is to instantiate a default Scrambled objcet:
+
 my_game = Scrambled()
+
 equivalent to:
+
 my_game = Scrambled(lang='eng', test=False, start=True)

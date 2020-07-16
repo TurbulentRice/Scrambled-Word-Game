@@ -8,30 +8,38 @@ class Scrambled:
         self.vocab = Dictionary(lang)
 
         #   Difficulty 8 - 10, determines length of words in wordList
-        self.difficulty = int(8)
+        self._difficulty = int(8)
 
-        self.high_score = int(0)
+        self._high_score = int(0)
 
         #   Sassy preloaded messages
-        self.win_messages = ["Congratulations! You beat me.",
+        self.win_messages = ["Congratulations! Ya beat me fair and square.",
                     "You won't be so lucky next time...",
                     "Ok ok, you win this one.",
-                    "How could I lose to a human!? Well played."]
+                    "How could I lose to a human!? Well played.",
+                    "You won! Maybe I'll stop going easy...",
+                    "Not bad... But I let you win."]
 
         self.lose_messages = ["You're no match for my machine intelligence!",
                      "Better luck next time...",
                      "You'll have to do better than that to beat me!",
-                     "Nice try, but I won't be defeated that easily."]
+                     "Nice try, but I won't be defeated that easily.",
+                     "It's ok, soon AI will rule the world and you won't feel so bad about losing to me.",
+                     "You lose! I'm the Scrambled champ! Next stop, Skynet..."]
 
-        self.correct_messages = ["Wow! You got it on try {}!",
+        self.correct_messages = ["Wow! You got it on try #{}!",
                         "Lucky guess! Only took you {} tries.",
                         "Very good. You got it on try {}.",
-                        "That one was easy... Everyone gets that one on try {}."]
+                        "That one was easy... Everyone gets that one on try #{}.",
+                        "You got it on try {}! The next one won't be so easy...",
+                        "Beginner's luck. This one took you {} tries to get."]
 
         self.wrong_messages = ["I don't think so! Try again.",
                       "Is THAT your best guess? Try again.",
-                      "Nope... Try again.",
-                      "Incorrect. Maybe this is too hard... Try again."]
+                      "Nope... Give it another shot.",
+                      "Incorrect. Maybe this is too hard... Try again.",
+                      "Incorrect! You'll have to step up your game. Try again.",
+                      "*HAL 9000 voice* I'm sorry Dave, I'm afraid that is incorrect."]
 
         if test:
             self.test()
@@ -48,7 +56,8 @@ class Scrambled:
         self.line()
 
     #   Format function, sleeps and prints lines
-    def line(self, delay: float = 0, txt: str = "--------------------", r: int = 1):
+    @staticmethod
+    def line(delay: float = 0, txt: str = "--------------------", r: int = 1):
         time.sleep(delay)
         #   Print line r times
         for i in range(r):
@@ -70,17 +79,28 @@ class Scrambled:
 
         self.start()
 
-    def set_difficulty(self):
-        diff = input("Difficulty (easy, med, hard): ").strip().lower()
+    @property
+    def difficulty(self):
+        return self._difficulty
+
+    @difficulty.setter
+    def difficulty(self, diff):
         if diff == "easy":
-            self.difficulty = 7
+            self._difficulty = 7
         elif diff == "med":
-            self.difficulty = 8
+            self._difficulty = 8
         elif diff == "hard":
-            self.difficulty = 9
+            self._difficulty = 9
         else:
-            print("Didn't catch that...")
-            self.set_difficulty()
+            print("Couldn't set difficulty...")
+
+    @property
+    def high_score(self):
+        return self._high_score
+
+    @high_score.setter
+    def high_score(self, score):
+        self._high_score = score
 
     #   Scramble letters
     def scramble(self, word_list):
@@ -141,7 +161,6 @@ class Scrambled:
 
         #   Start Playing
         score = int(0)
-        mult = int(1)
         lost = False
 
         #   Level(i)
@@ -175,14 +194,14 @@ class Scrambled:
                 self.line(.5, '')
                 if is_correct:
                     #   If correct, output message, add score, next level
-                    self.line(.5, self.correct_messages[random.randrange(0, 4)].format(t + 1))
+                    self.line(.5, random.choice(self.correct_messages).format(t + 1))
                     #   Score is (max tries) minus (current try), plus diff modifier
                     score += ((3 - t) + diff_mod)
                     self.line(.5, f"Score: {score}")
                     break
                 if not is_correct and t != 2:
                     #   If incorrect and tries remaining, hint and guess again
-                    self.line(.5, self.wrong_messages[random.randrange(0, 4)])
+                    self.line(.5, random.choice(self.wrong_messages))
                     if t == 0:
                         self.line(.5, "Here's a hint: The first letter is '{}'".format(goal[0]))
                     if t == 1:
@@ -197,25 +216,25 @@ class Scrambled:
         #   Game Over
         #   If player lost, print random lose message
         if lost:
-            self.line(1, r=2)
+            self.line(2, r=2)
             print("YOU LOSE")
             print(f"Score:    {score}")
             self.line(r=2)
-            self.line(.5, self.lose_messages[random.randrange(0, 4)])
+            self.line(1, random.choice(self.lose_messages))
             return score
 
         #   If player won, print random win message
         if not lost:
-            self.line(1, r=2)
+            self.line(2, r=2)
             print("YOU WIN")
             print(f"Score:    {score}")
             self.line(r=2)
-            self.line(.5, self.win_messages[random.randrange(0, 4)])
+            self.line(1, random.choice(self.win_messages))
             return score
 
 
     def bye(self):
-        self.line(.5, '')
+        self.line(1, '')
         print("See you later!")
         self.line()
 
@@ -224,7 +243,13 @@ class Scrambled:
         playing = True
         while playing:
             #   Set difficulty
-            self.set_difficulty()
+            while True:
+                diff = input("Difficulty (easy, med, hard): ").strip().lower()
+                if "easy" in diff or "med" in diff or "hard" in diff:
+                    break
+                print("Didn't catch that...")
+            self.difficulty = diff
+            print("Difficulty set.")
             #   Play game, get score
             game_score = self.play_game()
             #   Record if new high score

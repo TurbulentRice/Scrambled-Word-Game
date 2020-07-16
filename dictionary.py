@@ -16,7 +16,7 @@ class Dictionary:
 
     def trim(self, *exclude):
         #   Delete entries whose key includes " ", "-"
-        #   Consider deleting items whose value includes [Obs.],[Archaic]
+        #   Consider deleting items whose value includes [Obs.],[Archaic],[R.]
         for key, value in self.vocabulary.items():
             for c in exclude:
                 if c in key:
